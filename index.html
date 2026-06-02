@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA – Sistemas de Información</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #1a1a2e; }
+
+  /* NAV */
+  nav { background: #0e4d2d; color: #fff; display: flex; align-items: center; gap: 0; padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+  .nav-brand { padding: 0 24px; font-size: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.15); height: 52px; display: flex; align-items: center; }
+  .nav-links { display: flex; overflow-x: auto; }
+  .nav-links button { background: none; border: none; color: rgba(255,255,255,0.75); padding: 0 16px; height: 52px; font-size: 13px; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.15s; }
+  .nav-links button:hover { color: #fff; background: rgba(255,255,255,0.07); }
+  .nav-links button.active { color: #fff; border-bottom: 3px solid #4ade80; font-weight: 600; }
+
+  /* PAGES */
+  .page { display: none; max-width: 860px; margin: 0 auto; padding: 40px 24px 60px; }
+  .page.active { display: block; }
+
+  /* PORTADA */
+  .portada-hero { background: linear-gradient(135deg, #0e4d2d 0%, #1a7a4a 100%); border-radius: 16px; padding: 48px 40px; color: #fff; text-align: center; margin-bottom: 32px; }
+  .portada-hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .portada-hero p { font-size: 15px; opacity: 0.85; margin-bottom: 4px; }
+  .portada-badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 4px 16px; font-size: 13px; margin-top: 12px; }
+  .autores-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .autor-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 12px; }
+  .autor-avatar { width: 40px; height: 40px; border-radius: 50%; background: #d1fae5; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #065f46; flex-shrink: 0; }
+  .autor-name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+  .autor-role { font-size: 12px; color: #64748b; }
+  .objetivos-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; }
+  .objetivos-box h3 { font-size: 15px; font-weight: 700; color: #0e4d2d; margin-bottom: 14px; }
+  .obj-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .obj-dot { width: 22px; height: 22px; background: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #065f46; flex-shrink: 0; margin-top: 1px; }
+  .obj-text { font-size: 14px; color: #334155; line-height: 1.5; }
+
+  /* SECTION STYLES */
+  .section-header { margin-bottom: 28px; }
+  .section-header h2 { font-size: 26px; font-weight: 800; color: #0e4d2d; margin-bottom: 6px; }
+  .section-header p { font-size: 15px; color: #64748b; line-height: 1.6; }
+  .divider { height: 3px; width: 48px; background: #4ade80; border-radius: 2px; margin: 10px 0 20px; }
+
+  /* CARDS */
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 22px; margin-bottom: 16px; }
+  .card h3 { font-size: 15px; font-weight: 700; color: #0e4d2d; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card p, .card li { font-size: 14px; color: #334155; line-height: 1.65; }
+  .card ul { padding-left: 18px; margin-top: 6px; }
+  .card li { margin-bottom: 4px; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #d1fae5; }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; background: #0e4d2d; border-radius: 50%; border: 2px solid #4ade80; }
+  .tl-year { font-size: 12px; font-weight: 700; color: #0e4d2d; margin-bottom: 2px; }
+  .tl-text { font-size: 14px; color: #334155; line-height: 1.5; }
+
+  /* COMPONENTES GRID */
+  .comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .comp-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px 12px; text-align: center; }
+  .comp-icon { font-size: 28px; margin-bottom: 8px; }
+  .comp-title { font-size: 13px; font-weight: 700; color: #065f46; margin-bottom: 4px; }
+  .comp-desc { font-size: 12px; color: #047857; line-height: 1.4; }
+
+  /* FLUJO SI */
+  .flujo { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; margin: 20px 0; }
+  .flujo-box { background: #0e4d2d; color: #fff; border-radius: 10px; padding: 16px 20px; text-align: center; min-width: 110px; }
+  .flujo-box .fb-label { font-size: 11px; opacity: 0.7; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .flujo-box .fb-title { font-size: 15px; font-weight: 700; }
+  .flujo-arrow { font-size: 22px; color: #4ade80; padding: 0 8px; }
+  .retroalim { background: #f0fdf4; border: 1px dashed #4ade80; border-radius: 8px; padding: 10px 16px; text-align: center; font-size: 13px; color: #065f46; margin-top: 10px; }
+
+  /* PIRÁMIDE SI */
+  .piramide { display: flex; flex-direction: column; gap: 6px; align-items: center; margin: 20px 0; }
+  .pir-nivel { border-radius: 8px; padding: 14px 20px; text-align: center; color: #fff; font-weight: 700; font-size: 14px; }
+  .pir-sub { font-size: 11px; font-weight: 400; opacity: 0.85; margin-top: 2px; }
+
+  /* CICLO DE VIDA */
+  .ciclo-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 16px; }
+  .ciclo-step { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 16px; position: relative; overflow: hidden; }
+  .ciclo-step::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: #0e4d2d; }
+  .step-num { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .step-title { font-size: 14px; font-weight: 700; color: #0e4d2d; margin-bottom: 6px; }
+  .step-text { font-size: 13px; color: #475569; line-height: 1.5; }
+
+  /* SEGURIDAD */
+  .seg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 16px; }
+  .seg-card { border-radius: 12px; padding: 20px; }
+  .seg-card.c1 { background: #fef2f2; border: 1px solid #fecaca; }
+  .seg-card.c2 { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .seg-card.c3 { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .seg-icon { font-size: 26px; margin-bottom: 10px; }
+  .seg-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .seg-card.c1 .seg-title { color: #991b1b; }
+  .seg-card.c2 .seg-title { color: #1e40af; }
+  .seg-card.c3 .seg-title { color: #065f46; }
+  .seg-text { font-size: 13px; line-height: 1.5; }
+  .seg-card.c1 .seg-text { color: #7f1d1d; }
+  .seg-card.c2 .seg-text { color: #1e3a8a; }
+  .seg-card.c3 .seg-text { color: #047857; }
+
+  /* AUTOEVALUACIÓN */
+  .quiz-intro { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; font-size: 14px; color: #065f46; }
+  .quiz-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+  .quiz-q { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 14px; line-height: 1.5; }
+  .quiz-q span { display: inline-block; background: #0e4d2d; color: #fff; border-radius: 50%; width: 22px; height: 22px; text-align: center; line-height: 22px; font-size: 12px; margin-right: 8px; flex-shrink: 0; }
+  .quiz-opts { display: flex; gap: 10px; }
+  .quiz-btn { flex: 1; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #f8fafc; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; color: #334155; }
+  .quiz-btn:hover { border-color: #0e4d2d; background: #f0fdf4; }
+  .quiz-btn.correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+  .quiz-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+  .quiz-feedback { margin-top: 10px; font-size: 13px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: #d1fae5; color: #065f46; }
+  .quiz-feedback.fail { background: #fee2e2; color: #991b1b; }
+  .quiz-score { background: #0e4d2d; color: #fff; border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; display: none; }
+  .quiz-score h3 { font-size: 20px; margin-bottom: 6px; }
+  .quiz-score p { font-size: 14px; opacity: 0.85; }
+  .btn-check { background: #0e4d2d; color: #fff; border: none; padding: 10px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; }
+  .btn-check:hover { background: #1a7a4a; }
+
+  /* CONCLUSIÓN */
+  .conclusion-box { background: #0e4d2d; color: #fff; border-radius: 14px; padding: 30px 28px; margin-top: 24px; }
+  .conclusion-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+  .conclusion-box p { font-size: 14px; line-height: 1.7; opacity: 0.9; }
+
+  /* PROGRESS BAR */
+  .progress-bar { background: rgba(255,255,255,0.2); height: 3px; }
+  .progress-fill { height: 3px; background: #4ade80; transition: width 0.3s; }
+
+  /* NEXT BTN */
+  .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; }
+  .btn-nav { background: #0e4d2d; color: #fff; border: none; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .btn-nav:hover { background: #1a7a4a; }
+  .btn-nav.secondary { background: transparent; color: #0e4d2d; border: 1.5px solid #0e4d2d; }
+  .btn-nav.secondary:hover { background: #f0fdf4; }
+
+  /* CLOUD BADGES */
+  .cloud-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .cloud-item { border-radius: 10px; padding: 16px; text-align: center; }
+  .cloud-item.saas { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .cloud-item.paas { background: #f5f3ff; border: 1px solid #ddd6fe; }
+  .cloud-item.iaas { background: #fff7ed; border: 1px solid #fed7aa; }
+  .cloud-item .c-name { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+  .cloud-item.saas .c-name { color: #1e40af; }
+  .cloud-item.paas .c-name { color: #5b21b6; }
+  .cloud-item.iaas .c-name { color: #c2410c; }
+  .cloud-item .c-full { font-size: 11px; margin-bottom: 6px; }
+  .cloud-item.saas .c-full { color: #3b82f6; }
+  .cloud-item.paas .c-full { color: #7c3aed; }
+  .cloud-item.iaas .c-full { color: #ea580c; }
+  .cloud-item .c-desc { font-size: 12px; line-height: 1.4; }
+  .cloud-item.saas .c-desc { color: #1e3a8a; }
+  .cloud-item.paas .c-desc { color: #4c1d95; }
+  .cloud-item.iaas .c-desc { color: #9a3412; }
+
+  @media (max-width: 600px) {
+    .nav-brand { font-size: 13px; padding: 0 12px; }
+    .nav-links button { padding: 0 10px; font-size: 12px; }
+    .portada-hero { padding: 32px 20px; }
+    .portada-hero h1 { font-size: 24px; }
+    .cloud-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">SI – USB 2026</div>
+  <div class="nav-links">
+    <button class="active" onclick="goTo(0)">Inicio</button>
+    <button onclick="goTo(1)">1. Intro</button>
+    <button onclick="goTo(2)">2. Marco</button>
+    <button onclick="goTo(3)">3. Infraestructura</button>
+    <button onclick="goTo(4)">4. Clasificación</button>
+    <button onclick="goTo(5)">5. Ciclo de Vida</button>
+    <button onclick="goTo(6)">6. Seguridad</button>
+    <button onclick="goTo(7)">Autoevaluación</button>
+  </div>
+  <div class="progress-bar" style="position:absolute;bottom:0;left:0;right:0;">
+    <div class="progress-fill" id="progress" style="width:12.5%"></div>
+  </div>
+</nav>
+
+<!-- PÁGINA 0: PORTADA -->
+<div class="page active" id="page-0">
+  <div class="portada-hero">
+    <div style="font-size:13px;opacity:0.7;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.08em;">Objeto Virtual de Aprendizaje</div>
+    <h1>Sistemas de Información</h1>
+    <p>Universidad Simón Bolívar · Barranquilla, Atlántico</p>
+    <p>Ingeniería de Sistemas · Introducción a la Ingeniería · 2026</p>
+    <div class="portada-badge">6 capítulos · Autoevaluación interactiva</div>
+  </div>
+
+  <div class="autores-grid">
+    <div class="autor-card"><div class="autor-avatar">JM</div><div><div class="autor-name">Jesús Mauricio Martinez H.</div><div class="autor-role">Autor</div></div></div>
+    <div class="autor-card"><div class="autor-avatar">KA</div><div><div class="autor-name">Kevin Andres Martinez H.</div><div class="autor-role">Autor</div></div></div>
+    <div class="autor-card"><div class="autor-avatar">LM</div><div><div class="autor-name">Lisandro Junior Meza M.</div><div class="autor-role">Autor</div></div></div>
+  </div>
+
+  <div class="objetivos-box">
+    <h3>¿Qué aprenderás en este OVA?</h3>
+    <div class="obj-item"><div class="obj-dot">1</div><div class="obj-text">Identificar los componentes esenciales de un Sistema de Información.</div></div>
+    <div class="obj-item"><div class="obj-dot">2</div><div class="obj-text">Clasificar los tipos de SI según su función (TPS, MIS, DSS, ERP).</div></div>
+    <div class="obj-item"><div class="obj-dot">3</div><div class="obj-text">Describir las etapas del ciclo de vida de desarrollo de sistemas.</div></div>
+    <div class="obj-item"><div class="obj-dot">4</div><div class="obj-text">Comprender los principios de seguridad y ética en el manejo de datos.</div></div>
+  </div>
+
+  <div class="nav-footer">
+    <div></div>
+    <button class="btn-nav" onclick="goTo(1)">Comenzar &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 1: INTRODUCCIÓN -->
+<div class="page" id="page-1">
+  <div class="section-header">
+    <h2>Capítulo 1: Introducción</h2>
+    <div class="divider"></div>
+    <p>Los Sistemas de Información son el motor estratégico de las organizaciones modernas. En este capítulo se presentan su contexto, justificación y objetivos de estudio.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#127758; Contextualización</h3>
+    <p>Las organizaciones operan hoy en un entorno saturado de datos donde la agilidad es clave. Los SI han dejado de ser herramientas de oficina para convertirse en el motor estratégico que permite procesar grandes volúmenes de información y reaccionar a los cambios del mercado en tiempo real. En este escenario, la tecnología no es un lujo, sino una necesidad básica para competir y sobrevivir.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128161; Justificación</h3>
+    <p>Estudiar los Sistemas de Información permite identificar fallos en el flujo de datos y proponer soluciones que mejoren la productividad. Este OVA sirve como guía para aprovechar las herramientas digitales en la resolución de problemas reales y en la toma de decisiones estratégicas dentro de cualquier organización.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#127919; Objetivo General</h3>
+    <p>Analizar la estructura, funciones e importancia de los Sistemas de Información como herramienta estratégica para optimizar la gestión de datos y la toma de decisiones en las organizaciones.</p>
+    <ul style="margin-top:10px;">
+      <li>Identificar los componentes esenciales (hardware, software, datos y personas) de un SI.</li>
+      <li>Clasificar los diferentes tipos de sistemas según su nivel jerárquico y función.</li>
+      <li>Describir las etapas del ciclo de vida, desde el análisis de requisitos hasta el mantenimiento.</li>
+    </ul>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(0)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(2)">Siguiente &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 2: MARCO TEÓRICO -->
+<div class="page" id="page-2">
+  <div class="section-header">
+    <h2>Capítulo 2: Marco Teórico</h2>
+    <div class="divider"></div>
+    <p>Definición, evolución histórica, componentes y fundamentos de la Teoría General de Sistemas aplicada a los SI.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128218; Definición</h3>
+    <p>Un <strong>Sistema de Información</strong> es un conjunto organizado de elementos interrelacionados cuya finalidad es recolectar, procesar, almacenar y distribuir datos para transformarlos en información útil para la toma de decisiones. Integra recursos humanos, tecnológicos y procedimentales.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128336; Evolución histórica</h3>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Década de 1950</div><div class="tl-text">Procesamiento electrónico básico. Automatización de tareas operativas rutinarias.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Década de 1980</div><div class="tl-text">Sistemas de gestión de bases de datos (DBMS). Almacenamiento estructurado y acceso eficiente.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Actualidad</div><div class="tl-text">Inteligencia artificial y Big Data. Generación de conocimiento estratégico y optimización de procesos.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>&#9881;&#65039; Los 5 componentes de un SI</h3>
+    <div class="comp-grid">
+      <div class="comp-card"><div class="comp-icon">&#128421;&#65039;</div><div class="comp-title">Hardware</div><div class="comp-desc">Equipos físicos: servidores, computadoras, periféricos</div></div>
+      <div class="comp-card"><div class="comp-icon">&#128187;</div><div class="comp-title">Software</div><div class="comp-desc">Programas y sistemas operativos que procesan datos</div></div>
+      <div class="comp-card"><div class="comp-icon">&#128202;</div><div class="comp-title">Datos</div><div class="comp-desc">Materia prima y registros que el sistema transforma</div></div>
+      <div class="comp-card"><div class="comp-icon">&#128203;</div><div class="comp-title">Procesos</div><div class="comp-desc">Reglas y pasos lógicos para operar el sistema</div></div>
+      <div class="comp-card"><div class="comp-icon">&#128101;</div><div class="comp-title">Personas</div><div class="comp-desc">Usuarios y especialistas que interactúan con la tecnología</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>&#9654;&#65039; TGS aplicada a la Información</h3>
+    <p style="margin-bottom:14px;">Un SI debe verse como un todo integrado. Los datos fluyen así:</p>
+    <div class="flujo">
+      <div class="flujo-box"><div class="fb-label">Entrada</div><div class="fb-title">INPUT</div></div>
+      <div class="flujo-arrow">&#8594;</div>
+      <div class="flujo-box" style="background:#1a7a4a;"><div class="fb-label">Transformación</div><div class="fb-title">PROCESO</div></div>
+      <div class="flujo-arrow">&#8594;</div>
+      <div class="flujo-box" style="background:#065f46;"><div class="fb-label">Resultado</div><div class="fb-title">OUTPUT</div></div>
+    </div>
+    <div class="retroalim">&#8635; Retroalimentación: el output permite corregir y ajustar el proceso</div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(1)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(3)">Siguiente &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 3: INFRAESTRUCTURA -->
+<div class="page" id="page-3">
+  <div class="section-header">
+    <h2>Capítulo 3: Infraestructura y Tecnologías</h2>
+    <div class="divider"></div>
+    <p>Los recursos tecnológicos que sustentan el funcionamiento de los Sistemas de Información.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#127760; Recursos de Red y Telecomunicaciones</h3>
+    <p>Constituyen la infraestructura que permite la comunicación e intercambio de datos entre dispositivos. Incluye componentes físicos esenciales:</p>
+    <ul>
+      <li><strong>Routers:</strong> dirigen el tráfico entre distintas redes.</li>
+      <li><strong>Switches:</strong> conectan equipos en entornos locales.</li>
+      <li><strong>Medios de transmisión:</strong> fibra óptica, cables de cobre y antenas inalámbricas.</li>
+    </ul>
+    <p style="margin-top:10px;">Se rigen por protocolos como TCP/IP. Las redes pueden ser locales (LAN) o globales (WAN), con herramientas de seguridad como <strong>firewalls</strong> y <strong>VPNs</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128451;&#65039; Gestión de Bases de Datos y Almacenamiento</h3>
+    <p>Consiste en el uso de software especializado <strong>(DBMS)</strong> para organizar y controlar grandes volúmenes de datos de manera eficiente. Garantiza disponibilidad, integridad y no duplicación de la información, permitiendo consultas rápidas y un historial confiable.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#9729;&#65039; Servicios en la Nube (Cloud Computing)</h3>
+    <p style="margin-bottom:14px;">Acceso a recursos de computación a través de Internet. Aporta flexibilidad, reduce costos y permite el trabajo remoto.</p>
+    <div class="cloud-grid">
+      <div class="cloud-item saas">
+        <div class="c-name">SaaS</div>
+        <div class="c-full">Software como Servicio</div>
+        <div class="c-desc">Aplicaciones listas para usar (correo, CRM, office)</div>
+      </div>
+      <div class="cloud-item paas">
+        <div class="c-name">PaaS</div>
+        <div class="c-full">Plataforma como Servicio</div>
+        <div class="c-desc">Entornos de desarrollo y herramientas de codificación</div>
+      </div>
+      <div class="cloud-item iaas">
+        <div class="c-name">IaaS</div>
+        <div class="c-full">Infraestructura como Servicio</div>
+        <div class="c-desc">Servidores virtuales, almacenamiento y redes</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(2)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(4)">Siguiente &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 4: CLASIFICACIÓN -->
+<div class="page" id="page-4">
+  <div class="section-header">
+    <h2>Capítulo 4: Clasificación de los SI</h2>
+    <div class="divider"></div>
+    <p>Los sistemas de información se organizan en niveles jerárquicos según su propósito y los usuarios que los utilizan.</p>
+  </div>
+
+  <div class="piramide">
+    <div class="pir-nivel" style="background:#065f46;width:90%;">ERP – Planificación de Recursos Empresariales<div class="pir-sub">Integra toda la organización</div></div>
+    <div class="pir-nivel" style="background:#0e4d2d;width:73%;">DSS – Soporte a Decisiones<div class="pir-sub">Análisis de escenarios complejos</div></div>
+    <div class="pir-nivel" style="background:#166534;width:56%;">MIS – Información Gerencial<div class="pir-sub">Informes para directivos</div></div>
+    <div class="pir-nivel" style="background:#1a7a4a;width:40%;">TPS – Procesamiento de Transacciones<div class="pir-sub">Operaciones diarias</div></div>
+  </div>
+
+  <div class="card">
+    <h3>&#128203; TPS – Sistemas de Procesamiento de Transacciones</h3>
+    <p>Registran las operaciones diarias y rutinarias: ventas, depósitos, nóminas, pedidos. Son la base de datos operacional de la empresa. Su función es recolectar y almacenar eventos comerciales de forma rápida y eficiente.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#128200; MIS – Sistemas de Información Gerencial</h3>
+    <p>Usan los datos del TPS para generar informes periódicos sobre el desempeño empresarial. Ayudan a directivos de nivel medio a monitorear y controlar actividades mediante resúmenes históricos y actuales.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#129504; DSS – Sistemas de Soporte a Decisiones</h3>
+    <p>Herramientas interactivas para problemas no estructurados o complejos. Permiten simulaciones y análisis <em>"¿qué pasa si...?"</em> para evaluar posibles resultados antes de actuar. Van más allá de los informes del MIS.</p>
+  </div>
+
+  <div class="card">
+    <h3>&#127970; ERP – Planificación de Recursos Empresariales</h3>
+    <p>Plataformas integrales que unifican todos los departamentos (finanzas, RRHH, logística, ventas) en un solo sistema con base de datos común. Eliminan la duplicidad de información y permiten el flujo libre de datos entre áreas.</p>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(3)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(5)">Siguiente &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 5: CICLO DE VIDA -->
+<div class="page" id="page-5">
+  <div class="section-header">
+    <h2>Capítulo 5: Ciclo de Vida y Desarrollo</h2>
+    <div class="divider"></div>
+    <p>El proceso estructurado para construir, implementar y mantener un Sistema de Información de calidad.</p>
+  </div>
+
+  <div class="ciclo-steps">
+    <div class="ciclo-step">
+      <div class="step-num">Fase 1</div>
+      <div class="step-title">&#128269; Análisis de Requerimientos</div>
+      <div class="step-text">Se identifican las necesidades del sistema entrevistando usuarios y observando procesos. El resultado es un documento detallado que sirve como hoja de ruta.</div>
+    </div>
+    <div class="ciclo-step">
+      <div class="step-num">Fase 2</div>
+      <div class="step-title">&#9998;&#65039; Diseño</div>
+      <div class="step-text">Se define la arquitectura del sistema: interfaz de usuario, bases de datos y lógica del programa. Es el plano antes de construir.</div>
+    </div>
+    <div class="ciclo-step">
+      <div class="step-num">Fase 3</div>
+      <div class="step-title">&#128187; Codificación</div>
+      <div class="step-text">Los desarrolladores traducen el diseño a un lenguaje de programación para construir las aplicaciones y bases de datos necesarias.</div>
+    </div>
+    <div class="ciclo-step">
+      <div class="step-num">Fase 4</div>
+      <div class="step-title">&#9989; Pruebas</div>
+      <div class="step-text">El sistema se somete a pruebas rigurosas para detectar y corregir errores antes de su lanzamiento al entorno real.</div>
+    </div>
+    <div class="ciclo-step">
+      <div class="step-num">Fase 5</div>
+      <div class="step-title">&#128640; Implementación</div>
+      <div class="step-text">Se instala el sistema en el entorno real y se capacita a los usuarios. Es el momento de puesta en marcha.</div>
+    </div>
+    <div class="ciclo-step">
+      <div class="step-num">Fase 6</div>
+      <div class="step-title">&#128295; Mantenimiento</div>
+      <div class="step-text">Asegura que el sistema siga funcionando correctamente, se actualice y se adapte a nuevos cambios o necesidades del entorno.</div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(4)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(6)">Siguiente &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 6: SEGURIDAD -->
+<div class="page" id="page-6">
+  <div class="section-header">
+    <h2>Capítulo 6: Seguridad y Ética</h2>
+    <div class="divider"></div>
+    <p>La responsabilidad técnica, legal y moral en el manejo de la información organizacional.</p>
+  </div>
+
+  <div class="seg-grid">
+    <div class="seg-card c1">
+      <div class="seg-icon">&#128737;&#65039;</div>
+      <div class="seg-title">Ciberseguridad y Protección</div>
+      <div class="seg-text">Tecnologías y prácticas para proteger redes, dispositivos y datos contra ataques. Incluye firewalls, encriptación y antivirus para salvaguardar la integridad y disponibilidad de la información crítica.</div>
+    </div>
+    <div class="seg-card c2">
+      <div class="seg-icon">&#128196;</div>
+      <div class="seg-title">Normativa y Privacidad</div>
+      <div class="seg-text">Leyes y regulaciones como el RGPD que obligan a proteger la información personal. El usuario debe tener control sobre sus datos y estos no pueden usarse para fines no autorizados.</div>
+    </div>
+    <div class="seg-card c3">
+      <div class="seg-icon">&#9878;&#65039;</div>
+      <div class="seg-title">Ética en la Información</div>
+      <div class="seg-text">Responsabilidad moral de quienes gestionan sistemas. Evitar vigilancia injustificada, sesgo en algoritmos y asegurar transparencia. La tecnología debe beneficiar a la organización sin vulnerar derechos individuales.</div>
+    </div>
+  </div>
+
+  <div class="conclusion-box">
+    <h3>&#127942; Conclusión del OVA</h3>
+    <p>Los Sistemas de Información han evolucionado de ser herramientas de soporte técnico a convertirse en el motor estratégico esencial para la competitividad y la toma de decisiones en las organizaciones modernas. Su éxito no depende solo de la tecnología, sino de la sinergia entre el hardware, los procesos y el factor humano. Ante un entorno digital cambiante, la infraestructura debe ser flexible, adaptarse a tendencias como la nube o la IA, y operar siempre bajo un marco de ciberseguridad y ética.</p>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(5)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(7)">Ir a Autoevaluación &#8594;</button>
+  </div>
+</div>
+
+<!-- PÁGINA 7: AUTOEVALUACIÓN -->
+<div class="page" id="page-7">
+  <div class="section-header">
+    <h2>Autoevaluación</h2>
+    <div class="divider"></div>
+  </div>
+
+  <div class="quiz-intro">
+    Responde <strong>Verdadero</strong> o <strong>Falso</strong> a cada afirmación. Al finalizar presiona <em>"Ver resultados"</em> para conocer tu puntaje y retroalimentación.
+  </div>
+
+  <div class="quiz-item" id="q1">
+    <div class="quiz-q"><span>1</span>Los Sistemas de Información solo están compuestos por hardware y software, excluyendo el factor humano.</div>
+    <div class="quiz-opts">
+      <button class="quiz-btn" onclick="answer(1,'V')">Verdadero</button>
+      <button class="quiz-btn" onclick="answer(1,'F')">Falso</button>
+    </div>
+    <div class="quiz-feedback" id="fb1"></div>
+  </div>
+
+  <div class="quiz-item" id="q2">
+    <div class="quiz-q"><span>2</span>Un sistema ERP tiene como función principal integrar todas las áreas de una empresa en una base de datos única.</div>
+    <div class="quiz-opts">
+      <button class="quiz-btn" onclick="answer(2,'V')">Verdadero</button>
+      <button class="quiz-btn" onclick="answer(2,'F')">Falso</button>
+    </div>
+    <div class="quiz-feedback" id="fb2"></div>
+  </div>
+
+  <div class="quiz-item" id="q3">
+    <div class="quiz-q"><span>3</span>La fase de Análisis de Requerimientos debe realizarse siempre antes de empezar a programar o codificar un sistema.</div>
+    <div class="quiz-opts">
+      <button class="quiz-btn" onclick="answer(3,'V')">Verdadero</button>
+      <button class="quiz-btn" onclick="answer(3,'F')">Falso</button>
+    </div>
+    <div class="quiz-feedback" id="fb3"></div>
+  </div>
+
+  <div class="quiz-item" id="q4">
+    <div class="quiz-q"><span>4</span>El Cloud Computing obliga a las organizaciones a mantener sus propios servidores físicos dentro de sus oficinas para funcionar.</div>
+    <div class="quiz-opts">
+      <button class="quiz-btn" onclick="answer(4,'V')">Verdadero</button>
+      <button class="quiz-btn" onclick="answer(4,'F')">Falso</button>
+    </div>
+    <div class="quiz-feedback" id="fb4"></div>
+  </div>
+
+  <div class="quiz-item" id="q5">
+    <div class="quiz-q"><span>5</span>La ética en el manejo de la información incluye la responsabilidad moral de proteger la privacidad de los usuarios más allá de lo que exige la ley.</div>
+    <div class="quiz-opts">
+      <button class="quiz-btn" onclick="answer(5,'V')">Verdadero</button>
+      <button class="quiz-btn" onclick="answer(5,'F')">Falso</button>
+    </div>
+    <div class="quiz-feedback" id="fb5"></div>
+  </div>
+
+  <button class="btn-check" onclick="showScore()">Ver resultados</button>
+
+  <div class="quiz-score" id="score-box">
+    <h3 id="score-title"></h3>
+    <p id="score-msg"></p>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-nav secondary" onclick="goTo(6)">&#8592; Anterior</button>
+    <button class="btn-nav" onclick="goTo(0)">&#8962; Inicio</button>
+  </div>
+</div>
+
+<script>
+const answers = {1:'F', 2:'V', 3:'V', 4:'F', 5:'V'};
+const feedback = {
+  1: 'Los SI tienen 5 componentes: hardware, software, datos, procesos y personas. El factor humano es fundamental.',
+  2: 'Correcto. Los ERP unifican finanzas, RRHH, logística y ventas en una sola base de datos compartida.',
+  3: 'Correcto. Sin análisis previo, los errores en etapas posteriores son mucho más costosos de corregir.',
+  4: 'El Cloud Computing permite a las organizaciones prescindir de servidores físicos propios, alquilando recursos en la nube.',
+  5: 'Correcto. La ética va más allá de la ley: implica responsabilidad moral en el uso de datos y algoritmos.'
+};
+const userAnswers = {};
+
+function answer(q, val) {
+  userAnswers[q] = val;
+  const item = document.getElementById('q' + q);
+  const btns = item.querySelectorAll('.quiz-btn');
+  btns.forEach(b => { b.classList.remove('correct','wrong'); b.disabled = false; });
+  btns.forEach(b => {
+    if ((b.textContent.includes('Verdadero') && val === 'V') || (b.textContent.includes('Falso') && val === 'F')) {
+      b.classList.add(val === answers[q] ? 'correct' : 'wrong');
+    }
+  });
+  btns.forEach(b => b.disabled = true);
+}
+
+function showScore() {
+  let correct = 0;
+  for (let i = 1; i <= 5; i++) {
+    const fb = document.getElementById('fb' + i);
+    if (userAnswers[i] === answers[i]) {
+      correct++;
+      fb.textContent = '✓ Correcto. ' + feedback[i];
+      fb.className = 'quiz-feedback show ok';
+    } else {
+      fb.textContent = '✗ Incorrecto. ' + feedback[i];
+      fb.className = 'quiz-feedback show fail';
+    }
+  }
+  const box = document.getElementById('score-box');
+  const title = document.getElementById('score-title');
+  const msg = document.getElementById('score-msg');
+  const pct = Math.round((correct / 5) * 100);
+  title.textContent = correct + '/5 respuestas correctas (' + pct + '%)';
+  if (correct === 5) msg.textContent = 'Excelente! Dominas los conceptos fundamentales de los Sistemas de Información.';
+  else if (correct >= 3) msg.textContent = 'Buen desempeño. Repasa los capítulos correspondientes a las preguntas incorrectas.';
+  else msg.textContent = 'Te recomendamos revisar el OVA nuevamente antes de continuar.';
+  box.style.display = 'block';
+}
+
+const pages = document.querySelectorAll('.page');
+const navBtns = document.querySelectorAll('.nav-links button');
+const progress = document.getElementById('progress');
+let current = 0;
+
+function goTo(n) {
+  pages[current].classList.remove('active');
+  navBtns[current].classList.remove('active');
+  current = n;
+  pages[current].classList.add('active');
+  navBtns[current].classList.add('active');
+  progress.style.width = ((n + 1) / 8 * 100) + '%';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
